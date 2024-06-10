@@ -19,7 +19,7 @@ class googleDriveCore():
         self.service = build('drive', 'v3', credentials=creds)
         return
     
-    def findFolderByEmail(self, email):
+    def findRootFolderByEmail(self, email):
 
         query = f"mimeType='application/vnd.google-apps.folder' and name='YTPipeline' and '{email}' in owners"
         

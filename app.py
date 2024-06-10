@@ -26,7 +26,7 @@ def main():
     user = userCore(email)
     email = user.getAuthorizedEmail(email)
     
-    folderList = service.findFolderByEmail(email)
+    folderList = service.findRootFolderByEmail(email)
     print(folderList)
     
     return folderList
