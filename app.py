@@ -7,8 +7,17 @@ app=Flask(__name__)
 
 service=googleDriveCore().build()
 
-@app.route('/folderList', methods=['GET'])
+@app.route('/folderList', methods=['POST'])
 def getFolderList():
+    
+    #print request body
+    user = request.form.get('user')
+    print(user)
+    email = request.form.get('email')
+    print(email)
+    url = request.form.get('url')
+    print(url)
+    
     #Find every folder with name "test", return it's owner's name, id, and em
     folderList=service.files().list(\
         q="mimeType='application/vnd.google-apps.folder' and name='YTPipeline'",
