@@ -3,12 +3,17 @@ from flask import Flask, request
 from googleDrive.googleDriveCore import googleDriveCore 
 from waitress import serve
 
+from user.user import userCore
+
 app=Flask(__name__)
 
-service=googleDriveCore().build()
+app=Flask(__name__)
 
-@app.route('/folderList', methods=['POST'])
-def getFolderList():
+service=googleDriveCore()
+service.build()
+
+@app.route('/request', methods=['POST'])
+def main():
     
     #print request body
     user = request.form.get('user')
@@ -18,11 +23,12 @@ def getFolderList():
     url = request.form.get('url')
     print(url)
     
-    #Find every folder with name "test", return it's owner's name, id, and em
-    folderList=service.files().list(\
-        q="mimeType='application/vnd.google-apps.folder' and name='YTPipeline'",
-        fields="files(id, name, owners)",\
-        ).execute()
+    user = userCore(email)
+    email = user.getAuthorizedEmail(email)
+    
+    folderList = service.findFolderByEmail(email)
+    print(folderList)
+    
     return folderList
     
 

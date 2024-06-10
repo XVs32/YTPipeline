@@ -4,6 +4,9 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 
 class googleDriveCore():
+    
+    service = None 
+    
     def __init__(self):
         self._SCOPES=['https://www.googleapis.com/auth/drive']
 
@@ -13,6 +16,42 @@ class googleDriveCore():
 
     def build(self):
         creds = ServiceAccountCredentials.from_json_keyfile_name(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), self._SCOPES)
-        service = build('drive', 'v3', credentials=creds)
+        self.service = build('drive', 'v3', credentials=creds)
+        return
+    
+    def findFolderByEmail(self, email):
 
-        return service
+        query = f"mimeType='application/vnd.google-apps.folder' and name='YTPipeline' and '{email}' in owners"
+        
+        #retry if failed to get folderList
+        retry = 0
+        while retry < 5:
+            try:
+                folderList=self.service.files().list(\
+                    q=query,
+                    fields="files(id, name, owners)",\
+                    ).execute()
+                break
+            except:
+                self.build()
+                retry += 1
+            
+        return folderList
+    
+    def createFolder(self, parentFolderId, folderName):
+
+        #retry if failed to create folder
+        retry = 0
+        while retry < 5:
+            try:
+                folder = self.service.files().create(body={
+                    'name': folderName,
+                    'mimeType': 'application/vnd.google-apps.folder',
+                    'parents': [parentFolderId]
+                }).execute()
+                break
+            except:
+                self.build()
+                retry += 1
+
+        return folder
