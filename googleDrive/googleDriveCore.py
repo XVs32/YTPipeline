@@ -1,6 +1,8 @@
 import os
 from googleapiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
+import googleapiclient
+import googleapiclient
 
 
 class googleDriveCore():
@@ -36,10 +38,38 @@ class googleDriveCore():
                 self.build()
                 retry += 1
             
-        return folderList
+        return folderList["files"][0]["id"]
+    
+    def findFolderByName(self, parentFolderId, folderName):
+
+        query = f"mimeType='application/vnd.google-apps.folder' and name='{folderName}' and '{parentFolderId}' in parents"
+
+        #retry if failed to get folderList
+        retry = 0
+        while retry < 5:
+            try:
+                folderList=self.service.files().list(\
+                    q=query,
+                    fields="files(id, name, owners)",\
+                    ).execute()
+                break
+            except:
+                self.build()
+                retry += 1
+
+        if len(folderList["files"]) == 0:
+            return None
+        else:
+            return folderList["files"][0]["id"]
     
     def createFolder(self, parentFolderId, folderName):
-
+        
+        isExist = self.findFolderByName(parentFolderId, folderName)
+        
+        if isExist != None:
+            print("folder already exist")
+            return isExist
+        
         #retry if failed to create folder
         retry = 0
         while retry < 5:
@@ -49,9 +79,11 @@ class googleDriveCore():
                     'mimeType': 'application/vnd.google-apps.folder',
                     'parents': [parentFolderId]
                 }).execute()
+                print("create success")
                 break
             except:
                 self.build()
                 retry += 1
 
-        return folder
+        return folder["id"]
+    

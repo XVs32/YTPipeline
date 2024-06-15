@@ -26,11 +26,10 @@ def main():
     user = userCore(email)
     email = user.getAuthorizedEmail(email)
     
-    folderList = service.findRootFolderByEmail(email)
-    print(folderList)
+    rootFolderId = service.findRootFolderByEmail(email)
+    print(rootFolderId)
     
-    return folderList
-    
+    return service.createFolder(rootFolderId, "testFolder")
 
 @app.route('/userList', methods=['GET'])
 def createFolder():
