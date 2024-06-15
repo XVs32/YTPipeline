@@ -29,7 +29,9 @@ def main():
     rootFolderId = service.findRootFolderByEmail(email)
     print(rootFolderId)
     
-    return service.createFolder(rootFolderId, "testFolder")
+    parentFolderId = service.createFolder(rootFolderId, "testFolder")
+    
+    return service.uploadFile(parentFolderId, "download/AllMyself.wav", "AllMyself.wav")
 
 @app.route('/userList', methods=['GET'])
 def createFolder():

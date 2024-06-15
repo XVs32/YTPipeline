@@ -2,7 +2,6 @@ import os
 from googleapiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
 import googleapiclient
-import googleapiclient
 
 
 class googleDriveCore():
@@ -80,10 +79,17 @@ class googleDriveCore():
                     'parents': [parentFolderId]
                 }).execute()
                 print("create success")
-                break
+                return folder["id"]
             except:
                 self.build()
                 retry += 1
 
-        return folder["id"]
+        return None
     
+    def uploadFile(self, parentFolderId, filePath, fileName):
+
+        file_metadata = {'name': fileName, 'parents': [parentFolderId]}
+        media = googleapiclient.http.MediaFileUpload(filePath, resumable=True)
+        file = self.service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+        print("upload success")
+        return file.get('id')
