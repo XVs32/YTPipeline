@@ -9,10 +9,10 @@ class ytDlpCore():
         idStart = url.find("?v=")
         
         id = 'default_id'
-        
+           
         if idStart != -1:
-           
-           
+            yt_id = url[idStart:idStart+14]
+            yt_id = yt_id[3:]
            
         return id
 
