@@ -5,10 +5,13 @@ from waitress import serve
 
 from user.user import userCore
 
-app=Flask(__name__)
+from ytDlp.ytDlp import ytDlpCore
 
 app=Flask(__name__)
 
+app=Flask(__name__)
+
+downloader = ytDlpCore()
 service=googleDriveCore()
 service.build()
 
@@ -31,7 +34,12 @@ def main():
     
     parentFolderId = service.createFolder(rootFolderId, "testFolder")
     
-    return service.uploadFile(parentFolderId, "download/AllMyself.wav", "AllMyself.wav")
+    filePath = downloader.download(url, "aac")
+    fileName = filePath.split("/")[-1]
+    
+    service.uploadFile(parentFolderId, filePath, fileName)
+    
+    return "success"
 
 @app.route('/userList', methods=['GET'])
 def createFolder():
