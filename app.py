@@ -4,16 +4,15 @@ from googleDrive.googleDriveCore import googleDriveCore
 from waitress import serve
 
 from user.user import userCore
-
+from autoTag.autoTag import autoTagCore
 from ytDlp.ytDlp import ytDlpCore
-
-app=Flask(__name__)
 
 app=Flask(__name__)
 
 downloader = ytDlpCore()
 service=googleDriveCore()
 service.build()
+tagAi = autoTagCore()
 
 @app.route('/request', methods=['POST'])
 def main():
@@ -25,17 +24,21 @@ def main():
     print(email)
     url = request.form.get('url')
     print(url)
-    
+ 
     user = userCore(email)
     email = user.getAuthorizedEmail(email)
-    
+
     rootFolderId = service.findRootFolderByEmail(email)
     print(rootFolderId)
-    
-    parentFolderId = service.createFolder(rootFolderId, "testFolder")
-    
+ 
     filePath = downloader.download(url, "aac")
     fileName = filePath.split("/")[-1]
+    
+    tagAi.load_audio(fileName)
+    tag = tagAi.tag()
+    
+    parentFolderId = service.createFolder(rootFolderId, tag)
+    
     
     service.uploadFile(parentFolderId, filePath, fileName)
     

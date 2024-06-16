@@ -11,8 +11,8 @@ class ytDlpCore():
         id = 'default_id'
            
         if idStart != -1:
-            yt_id = url[idStart:idStart+14]
-            yt_id = yt_id[3:]
+            id = url[idStart:idStart+14]
+            id = id[3:]
            
         return id
 
