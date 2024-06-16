@@ -1,6 +1,7 @@
 import yt_dlp
 from slugify import slugify
 import ffmpeg
+import os
 
 class ytDlpCore():
     
@@ -10,9 +11,9 @@ class ytDlpCore():
         id = 'default_id'
         
         if idStart != -1:
-            id = url[idStart:idStart+14]
-            id = id[3:]
-        
+           
+           
+           
         return id
 
     def getVideInfo(self, yt_id):
@@ -23,6 +24,7 @@ class ytDlpCore():
     
         info = yt_dlp.YoutubeDL(ydl_opts).extract_info(yt_id, download=False)
         
+        
         info['title'] = slugify(info['title'], allow_unicode=True)
         
         return info['title'], info['ext']
@@ -32,7 +34,7 @@ class ytDlpCore():
         #output to "download" folder
         
         id = self.getVideoId(url)
-        title, ext = self.getVideInfo(url)
+        title, ext = self.getVideInfo(id)
         
         ydl_opts = {
             'format': 'bestaudio/best',
@@ -42,12 +44,16 @@ class ytDlpCore():
         yt_dlp.YoutubeDL(ydl_opts).download([id])
        
         #convert downloaded file to "format" type 
-        self.formatConvert('download/' + title, '.' + ext, '.' + format)
+        self.formatConvert('download/' + title, ext, format)
         
         return 'download/' + title + '.' + format
         
-    def formatConvert(self, file_path, extIn, extOut):
+    def formatConvert(self, filePath, extIn, extOut):
         #convert file from extIn type to extOut type using ffmpeg
-        ffmpeg.input(file_path + "." + extIn).output(file_path + "." + extOut).run()
+        ffmpeg.input(filePath + "." + extIn).output(filePath + "." + extOut).run()
+        
+        # Remove original file
+        os.remove(filePath + "." + extIn)
+        
         return
             

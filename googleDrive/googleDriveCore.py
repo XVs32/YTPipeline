@@ -92,4 +92,8 @@ class googleDriveCore():
         media = googleapiclient.http.MediaFileUpload(filePath, resumable=True)
         file = self.service.files().create(body=file_metadata, media_body=media, fields='id').execute()
         print("upload success")
+        
+        # Remove original file
+        os.remove(filePath)
+        
         return file.get('id')
