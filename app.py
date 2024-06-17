@@ -2,6 +2,7 @@ from dataclasses import fields
 from flask import Flask, request
 from googleDrive.googleDriveCore import googleDriveCore 
 from waitress import serve
+import threading
 
 from user.user import userCore
 from autoTag.autoTag import autoTagCore
@@ -18,13 +19,18 @@ tagAi = autoTagCore()
 def main():
     
     #print request body
-    user = request.form.get('user')
-    print(user)
     email = request.form.get('email')
     print(email)
     url = request.form.get('url')
     print(url)
- 
+   
+    t_yt_download = threading.Thread(target=download, args=(email, url))
+    t_yt_download.start()
+    
+    return "<script>window.close();</script>" 
+
+def download(email, url):
+  
     user = userCore(email)
     email = user.getAuthorizedEmail(email)
 
@@ -42,7 +48,7 @@ def main():
     
     service.uploadFile(parentFolderId, filePath, fileName)
     
-    return "success"
+    return
 
 @app.route('/userList', methods=['GET'])
 def createFolder():
