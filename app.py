@@ -10,10 +10,6 @@ from ytDlp.ytDlp import ytDlpCore
 
 app=Flask(__name__)
 
-downloader = ytDlpCore()
-service=googleDriveCore()
-service.build()
-tagAi = autoTagCore()
 
 @app.route('/request', methods=['POST'])
 def main():
@@ -31,6 +27,11 @@ def main():
 
 def download(email, url):
   
+    downloader = ytDlpCore()
+    service=googleDriveCore()
+    service.build()
+    tagAi = autoTagCore()
+
     user = userCore(email)
     email = user.getAuthorizedEmail(email)
 
@@ -49,33 +50,6 @@ def download(email, url):
     service.uploadFile(parentFolderId, filePath, fileName)
     
     return
-
-@app.route('/userList', methods=['GET'])
-def createFolder():
-    pass
-
-
-@app.get('/files-with-id/<file_id>/')
-def get_files_with_id(file_id):
-    pass
-
-@app.get('/files-in-folder/<folder_id>/')
-def get_files_in_folder(folder_id):
-    pass
-
-@app.get('/files-with-type')
-def get_files_with_type():
-    pass
-
-
-@app.get('/files-with-limit-offset')
-def get_files_with_limit_offset():
-    pass
-
-
-@app.get('/files-with-limit-offset-order')
-def get_files_with_limit_offset_order():
-    pass
 
 if __name__=="__main__":  
     # app.run(debug=True, host="0.0.0.0", port=8080)
